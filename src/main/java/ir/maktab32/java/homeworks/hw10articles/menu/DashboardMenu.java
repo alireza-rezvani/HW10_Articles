@@ -12,11 +12,11 @@ public class DashboardMenu {
         }
         else {
             if (CurrentUserStatus.isWriter()) {
-                System.out.println("\u29bf Writer Dashboard!");
+                System.out.println("\u29bf Writer Dashboard:");
                 System.out.println(new GetDashboardByWriterUseCaseImpl().execute());
             }
             if (CurrentUserStatus.isAdmin()){
-                System.out.println("\u29bf Admin Dashboard!");
+                System.out.println("\u29bf Admin Dashboard:");
                 System.out.println(new GetDashboardByAdminUseCaseImpl().execute());
             }
         }

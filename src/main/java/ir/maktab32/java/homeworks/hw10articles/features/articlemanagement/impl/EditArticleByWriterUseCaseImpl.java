@@ -42,7 +42,7 @@ public class EditArticleByWriterUseCaseImpl implements EditArticleByWriterUseCas
             if (IsNumeric.execute(articleId) && ArticleRepository.getInstance().isExisting(Long.parseLong(articleId))){
                 Article articleFromDatabase = ArticleRepository.getInstance().findById(Long.parseLong(articleId));
 
-                if (articleFromDatabase.getWriterUsername().equals(AuthenticationService.getInstance().getSignedInUser())) {
+                if (articleFromDatabase.getWriterUsername().equals(AuthenticationService.getInstance().getSignedInUser().getUsername())) {
                     System.out.println("\t\t\u29bf Enter New Title:\t(Press * to Skip)");
                     String newTitle = scanner.nextLine();
                     if (newTitle.equals("*") || newTitle.isEmpty())

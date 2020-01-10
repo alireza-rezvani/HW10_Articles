@@ -18,7 +18,7 @@ public class GetDashboardByWriterUseCaseImpl implements GetDashboardByWriterUseC
             result = "\t\u2705 Number of All Articles: " + allArticles.size();
             int currentUserArticlesCounter = 0;
             for (Article i : allArticles)
-                if (i.getWriterUsername().equals(AuthenticationService.getInstance().getSignedInUser()))
+                if (i.getWriterUsername().equals(AuthenticationService.getInstance().getSignedInUser().getUsername()))
                     currentUserArticlesCounter++;
             result += "\n\t\u2705 Number of Your Articles: " + currentUserArticlesCounter;
         }

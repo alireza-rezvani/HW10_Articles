@@ -11,6 +11,17 @@ import java.util.function.Predicate;
 
 public class CrudRepositoryTest {
 
+
+    @BeforeEach
+    public void setup(){
+        List<TestEntity> allEntities = TestEntityRepository.getInstance().findAll();
+        if (allEntities != null && !allEntities.isEmpty()) {
+            for (TestEntity i : allEntities) {
+                TestEntityRepository.getInstance().remove(i);
+            }
+        }
+    }
+
     @Test
     @DisplayName("Find All Test")
     public void findAllTest(){
@@ -35,6 +46,7 @@ public class CrudRepositoryTest {
         );
 
         //display all
+        System.out.println("\u2705 Find All Test");
         System.out.println("\n\u29bf All Entities List:");
         TestEntityRepository.getInstance().findAll().forEach(System.out::println);
     }
@@ -56,13 +68,14 @@ public class CrudRepositoryTest {
 
         //test
         Assertions.assertTrue(
-                TestEntityRepository.getInstance().findById(2L).getTitle().equals("Test Entity 2")
+                TestEntityRepository.getInstance().findById(savedEntity2.getId()+1).getTitle().equals("Test Entity 3")
         );
 
 
         //display founded Entity
-        System.out.println("\n\u29bf Founded Entity By Id: 2");
-        System.out.println(TestEntityRepository.getInstance().findById(2L));
+        System.out.println("\u2705 Find By Id Test");
+        System.out.println("\n\u29bf Founded Entity By Id: " + savedEntity3.getId());
+        System.out.println(TestEntityRepository.getInstance().findById(savedEntity3.getId()));
 
     }
 
@@ -77,9 +90,10 @@ public class CrudRepositoryTest {
         TestEntity entity2 =  TestEntityRepository.getInstance().save(new TestEntity(null, "Save Test"));
 
         //test
-        Assertions.assertTrue(entity2.getId() == 2l);
+        Assertions.assertTrue(TestEntityRepository.getInstance().findAll().contains(entity1) && entity2.getId() == entity1.getId()+1);
 
         //display all saved entities
+        System.out.println("\u2705 Save Test");
         System.out.println("\n\u29bf All Entities List:");
         TestEntityRepository.getInstance().findAll().forEach(System.out::println);
     }
@@ -90,15 +104,20 @@ public class CrudRepositoryTest {
         //save an entity
         TestEntity savedEntity = TestEntityRepository.getInstance().save(new TestEntity(null,"Test"));
 
+        //display before update
+        System.out.println("\u2705 Update Test");
+        System.out.println("\n\u29bf All Entities List Before Update:");
+        TestEntityRepository.getInstance().findAll().forEach(System.out::println);
+
         //edit saved entity and Update
         savedEntity.setTitle("Update Test");
         TestEntityRepository.getInstance().update(savedEntity);
 
         //test
-        Assertions.assertTrue(TestEntityRepository.getInstance().findById(1L).getTitle().equals("Update Test"));
+        Assertions.assertTrue(TestEntityRepository.getInstance().findById(savedEntity.getId()).getTitle().equals("Update Test"));
 
         //display all saved entities
-        System.out.println("\n\u29bf All Entities List:");
+        System.out.println("\u29bf All Entities List After Update:");
         TestEntityRepository.getInstance().findAll().forEach(System.out::println);
     }
 
@@ -111,11 +130,12 @@ public class CrudRepositoryTest {
 
         //test
         Assertions.assertTrue(
-                TestEntityRepository.getInstance().isExisting(1L)
-                        && !TestEntityRepository.getInstance().isExisting(2L)
+                TestEntityRepository.getInstance().isExisting(savedEntity1.getId())
+                        && !TestEntityRepository.getInstance().isExisting(savedEntity1.getId() + 1)
         );
 
         //display all
+        System.out.println("\u2705 Is Existing Test");
         System.out.println("\n\u29bf All Entities List:");
         TestEntityRepository.getInstance().findAll().forEach(System.out::println);
     }
@@ -127,19 +147,20 @@ public class CrudRepositoryTest {
         TestEntity savedEntity1 = TestEntityRepository.getInstance().save(new TestEntity(null,"Test 1"));
         TestEntity savedEntity2 = TestEntityRepository.getInstance().save(new TestEntity(null,"Test 2"));
 
+        System.out.println("\u2705 Remove Test");
         //display all entities
         System.out.println("\n\u29bf All Entities List Before Remove:");
         TestEntityRepository.getInstance().findAll().forEach(System.out::println);
 
         //remove first Entity
-        TestEntityRepository.getInstance().remove(TestEntityRepository.getInstance().findById(1L));
+        TestEntityRepository.getInstance().remove(TestEntityRepository.getInstance().findById(savedEntity1.getId()));
 
         //display all entities
-        System.out.println("\n\u29bf All Entities List After Remove:");
+        System.out.println("\u29bf All Entities List After Remove:");
         TestEntityRepository.getInstance().findAll().forEach(System.out::println);
 
         //test
-        Assertions.assertTrue(!TestEntityRepository.getInstance().isExisting(1L));
+        Assertions.assertTrue(!TestEntityRepository.getInstance().isExisting(savedEntity2.getId() - 1));
     }
 
     @Test
@@ -150,6 +171,7 @@ public class CrudRepositoryTest {
         TestEntity savedEntity1 = TestEntityRepository.getInstance().save(new TestEntity(null,"Test 1"));
         TestEntity savedEntity2 = TestEntityRepository.getInstance().save(new TestEntity(null,"Test 2"));
 
+        System.out.println("\u2705 Remove By Id Test");
         //display all entities
         System.out.println("\n\u29bf All Entities List Before Remove:");
         TestEntityRepository.getInstance().findAll().forEach(System.out::println);
@@ -158,7 +180,7 @@ public class CrudRepositoryTest {
         TestEntityRepository.getInstance().removeById(savedEntity1.getId());
 
         //display all entities
-        System.out.println("\n\u29bf All Entities List After Removing Id: " + savedEntity1.getId());
+        System.out.println("\u29bf All Entities List After Removing Id: " + savedEntity1.getId());
         TestEntityRepository.getInstance().findAll().forEach(System.out::println);
 
         //test
@@ -192,9 +214,10 @@ public class CrudRepositoryTest {
         Assertions.assertTrue(result.size() == 2 && !result.contains(savedEntity3));
 
         //display
+        System.out.println("\u2705 Find All By Predicate Test");
         System.out.println("\n\u29bf All Entities List:");
         TestEntityRepository.getInstance().findAll().forEach(System.out::println);
-        System.out.println("\n\u29bf After Filtering: ");
+        System.out.println("\u29bf After Filtering: ");
         result.forEach(System.out::println);
     }
 
@@ -223,9 +246,10 @@ public class CrudRepositoryTest {
         Assertions.assertTrue(result.size() == 3 && result.get(1).equals("JavaScript"));
 
         //display
+        System.out.println("\u2705 Find All By Function Test");
         System.out.println("\n\u29bf List Before Mapping:");
         TestEntityRepository.getInstance().findAll().forEach(System.out::println);
-        System.out.println("\n\u29bf List After Mapping:");
+        System.out.println("\u29bf List After Mapping:");
         result.forEach(System.out::println);
     }
 
