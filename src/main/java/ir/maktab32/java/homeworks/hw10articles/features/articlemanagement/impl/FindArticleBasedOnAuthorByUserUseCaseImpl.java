@@ -1,0 +1,77 @@
+package ir.maktab32.java.homeworks.hw10articles.features.articlemanagement.impl;
+
+
+import ir.maktab32.java.homeworks.hw10articles.entities.db2.Role;
+import ir.maktab32.java.homeworks.hw10articles.entities.db2.User;
+import ir.maktab32.java.homeworks.hw10articles.entities.db1.Article;
+import ir.maktab32.java.homeworks.hw10articles.features.articlemanagement.usecase.FindArticleBasedOnAuthorByUserUseCase;
+import ir.maktab32.java.homeworks.hw10articles.repositories.db2.UserRepository;
+import ir.maktab32.java.homeworks.hw10articles.repositories.db1.ArticleRepository;
+import ir.maktab32.java.homeworks.hw10articles.utilities.RoleTitle;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class FindArticleBasedOnAuthorByUserUseCaseImpl implements FindArticleBasedOnAuthorByUserUseCase {
+    @Override
+    public List<Article> execute() {
+        List<Article> result;
+        User validatedUser = inputAndValidation();
+        if (validatedUser != null){
+            List<Article> allArticles = ArticleRepository.getInstance().findAll();
+            result = new ArrayList<>();
+            for (Article i : allArticles) {
+                if (i.getWriterUsername().equals(validatedUser.getUsername()))
+                    result.add(i);
+            }
+            if (result.size() != 0)
+                System.out.println("\t\t\u2705 Articles Found Successfully!");
+            else {
+                System.out.println("\t\t\u26a0 This Writer has No Articles!");
+                result = null;
+            }
+        }
+        else {
+            System.out.println("\t\t\u26a0 Loading Articles Failed!");
+            result = null;
+        }
+        return result;
+    }
+
+    private User inputAndValidation(){
+        Scanner scanner = new Scanner(System.in);
+        User result;
+        System.out.print("\t\u29bf Writer's Username: ");
+        String authorUsername = scanner.nextLine();
+        List<User> allUsers = UserRepository.getInstance().findAll();
+        User requestedUser = null;
+        for (User i : allUsers){
+            if (i.getUsername().equals(authorUsername)){
+                requestedUser = i;
+                break;
+            }
+        }
+        if (requestedUser == null){
+            System.out.println("\t\t\u26a0 This Username Doesn't Exist in Database!");
+            result = null;
+        }
+        else {
+            boolean isWriter = false;
+            for (Role i : requestedUser.getRoles()){
+                if (i.getTitle().equals(RoleTitle.WRITER)){
+                    isWriter = true;
+                    break;
+                }
+            }
+            if (!isWriter){
+                System.out.println("\t\t\u26a0 Requested User Isn't A Writer!");
+                result = null;
+            }
+            else {
+                result = requestedUser;
+            }
+        }
+        return result;
+    }
+}
